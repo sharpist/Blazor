@@ -1,0 +1,88 @@
+﻿@page "/addemployee"
+@using Microsoft.AspNetCore.SignalR.Client
+@using Blazor.Shared
+@implements IDisposable
+@inject HttpClient        Http
+@inject NavigationManager Navigation
+
+<h2>Create Employee</h2>
+<hr />
+<EditForm Model="@employee" OnValidSubmit="Create">
+    <DataAnnotationsValidator />
+    <div class="form-group row">
+        <label for="Name" class="control-label col-md-12">Name</label>
+        <div class="col-md-6">
+            <InputText form="Name" type="text" class="form-control" @bind-Value="@employee.Name" />
+        </div>
+        <ValidationMessage For="@(() => employee.Name)" />
+    </div>
+    <div class="form-group row">
+        <label for="Gender" class="control-label col-md-12">Gender</label>
+        <div class="col-md-6">
+            <InputSelect form="Gender" class="form-control" @bind-Value="@employee.Gender">
+                <option value="" selected="selected" disabled>- Select gender -</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </InputSelect>
+        </div>
+        <ValidationMessage For="@(() => employee.Gender)" />
+    </div>
+    <div class="form-group row">
+        <label for="City" class="control-label col-md-12">City</label>
+        <div class="col-md-6">
+            <InputText form="City" type="text" class="form-control" @bind-Value="@employee.City" />
+        </div>
+        <ValidationMessage For="@(() => employee.City)" />
+    </div>
+    <div class="form-group row">
+        <label for="Country" class="control-label col-md-12">Country</label>
+        <div class="col-md-6">
+            <InputText form="Country" type="text" class="form-control" @bind-Value="@employee.Country" />
+        </div>
+        <ValidationMessage For="@(() => employee.Country)" />
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-6 text-right">
+            <button type="submit" class="btn btn-success m-1">Save</button>
+            <button type="button" class="btn btn-secondary m-1" @onclick="Cancel">Cancel</button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private EmployeeInfo  employee = new EmployeeInfo();
+    private HubConnection hubConnection;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/EmployeeHub"))
+            .Build();
+
+        await hubConnection.StartAsync();
+    }
+
+    public async Task Create()
+    {
+        await Http.PostAsJsonAsync("api/employee", employee);
+        if (IsConnected) await SendMessage();
+
+        Navigation.NavigateTo("employeelist");
+    }
+
+    private bool IsConnected =>
+        hubConnection.State == HubConnectionState.Connected;
+
+    private Task SendMessage() => hubConnection.SendAsync("SendMessage");
+
+    public void Cancel()
+    {
+        Navigation.NavigateTo("employeelist");
+    }
+
+    public void Dispose()
+    {
+        _ = hubConnection.DisposeAsync();
+    }
+}

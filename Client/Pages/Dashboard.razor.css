@@ -1,0 +1,43 @@
+﻿.card {
+    position: initial;
+    border: none;
+    background-color: inherit;
+}
+
+.card-content.text {
+    color: #fff;
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@media (max-width: 800px) {
+    .card-content.text {
+        font-size: 18px !important;
+    }
+}
+
+@media (min-width: 800px), (max-width: 600px) {
+    .card-content.text {
+        font-size: 24px !important;
+    }
+}
+
+::deep #dashboard .e-panel.orange {
+    background-color: #f0910c;
+}
+
+::deep #dashboard .e-panel.blue {
+    background-color: #00c0ef;
+}
+
+::deep #dashboard .e-panel.green {
+    background-color: #00a65a;
+}
+
+::deep .sf-license-warning {
+    visibility: hidden !important;
+    display: none !important;
+}

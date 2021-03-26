@@ -1,0 +1,77 @@
+﻿<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">Blazor</a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+@*https://iconify.design/icon-sets/oi/*@
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="card">
+                <span class="oi oi-info" aria-hidden="true"></span> Card
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="rating">
+                <span class="oi oi-star" aria-hidden="true"></span> Rating
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="cascadingvalue">
+                <span class="oi oi-layers" aria-hidden="true"></span> Cascading Value
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="dotnetinjs">
+                <span class="oi oi-code" aria-hidden="true"></span> DotNet In JS
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="jsindotnet">
+                <span class="oi oi-code" aria-hidden="true"></span> JS In DotNet
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="browserfunctions">
+                <span class="oi oi-browser" aria-hidden="true"></span> Browser Functions
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="imageupload">
+                <span class="oi oi-image" aria-hidden="true"></span> Image Upload
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="employeelist">
+                <span class="oi oi-person" aria-hidden="true"></span> Employee List
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="dashboard">
+                <span class="oi oi-dashboard" aria-hidden="true"></span> Dashboard
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="notification">
+                <span class="oi oi-bell" aria-hidden="true"></span> Notification
+            </NavLink>
+        </li>
+    </ul>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

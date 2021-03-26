@@ -1,0 +1,112 @@
+﻿@page "/dotnetinjs"
+
+<Title value="DotNet In JS" />
+
+<h2>Call DotNet From JavaScript</h2>
+<hr />
+<div class="form-group row">
+    <div class="col-md-6">
+        <h5>Calling static C# methods from JS:</h5>
+    </div>
+    <div class="col-md-4">
+        <button type="button" class="btn btn-sm btn-success" onclick="dotNetInJS.calculateSquare()">
+            Calculate
+        </button>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-md-12">
+        <div class="h5 alert alert-light border" role="alert">
+            Square root operation:
+            <span class="text-break text-success font-weight-bold" id="string-result"></span>
+        </div>
+    </div>
+</div>
+
+<br />
+<br />
+
+<div class="form-group row">
+    <div class="col-md-6">
+        <h5>Calling static C# methods from JS with Custom Identifier:</h5>
+    </div>
+    <div class="col-md-4">
+        <button type="button" class="btn btn-sm btn-success" onclick="dotNetInJS.calculateSquareUnformatted()">
+            Calculate
+        </button>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-md-12">
+        <div class="h5 alert alert-light border" role="alert">
+            Square root operation:
+            <span class="text-break text-success font-weight-bold" id="result"></span>
+        </div>
+    </div>
+</div>
+
+<br />
+<br />
+
+<div class="form-group row">
+    <div class="col-md-6">
+        <h5>Call .NET class instance methods from JS:</h5>
+    </div>
+    <div class="col-md-4">
+        <button type="button" class="btn btn-sm btn-success" @onclick="SendDotNetInstanceToJS">
+            Get Object
+        </button>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-md-12">
+        <div class="h5 alert alert-light border" role="alert">
+            Print person from .NET class instance:
+            <code class="form-text text-break text-success font-weight-bold" id="person"></code>
+        </div>
+    </div>
+</div>
+
+<br />
+<br />
+
+<div class="form-group row">
+    <div class="col-md-6">
+        <h5>Call Async methods .NET from JS:</h5>
+    </div>
+    <div class="col-md-4">
+        <button type="button" class="btn btn-sm btn-success" onclick="dotNetInJS.getWeatherData()">
+            Get Data
+        </button>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-md-12">
+        <div class="h5 alert alert-light border" role="alert">
+            Get WeatherData from .NET async task method:
+            <code class="form-text text-break text-success font-weight-bold" id="weather"></code>
+        </div>
+    </div>
+</div>
+
+<br />
+<br />
+
+<div class="form-group row">
+    <div class="col-md-6">
+        <h5>Calling C# instance methods from JS:</h5>
+    </div>
+    <div class="col-md-4">
+        <button type="button" class="btn btn-sm btn-success" onclick="dotNetInJS.showCoordinates()">
+            Coordinates
+        </button>
+    </div>
+</div>
+<div class="form-group row">
+    <div class="col-md-12">
+        <p class="h5 text-success bg-light border rounded d-flex align-items-center justify-content-center"
+           style="height: 200px; width: 300px;" id="coordinates">
+            <strong class="d-none">@coordinates.X - @coordinates.Y</strong>
+        </p>
+    </div>
+</div>

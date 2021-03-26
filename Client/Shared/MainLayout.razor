@@ -1,0 +1,17 @@
+﻿@inherits LayoutComponentBase
+
+<div class="page d-flex">
+    <div class="sidebar flex-grow-0 flex-shrink-0">
+        <NavMenu />
+    </div>
+
+    <div class="main flex-grow-1 flex-shrink-1">
+        <div class="top-row sticky-top px-4">
+            <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
+        </div>
+
+        <div class="container content px-4">
+            @Body
+        </div>
+    </div>
+</div>

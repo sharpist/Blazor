@@ -1,0 +1,32 @@
+﻿@page "/cascadingvalue"
+
+<Title value="Cascading Value" />
+
+<h2>Render Fragment & Cascading Value</h2>
+<hr />
+<div class="form-group row">
+    <div class="col-md-6">
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="switchCheckDefault" @bind="showItem" />
+            <label class="form-check-label" for="switchCheckDefault">Show / Hide Item</label>
+        </div>
+    </div>
+
+    <br /><br />
+
+    <div class="col-md-4">
+        <List>
+            <ListItem Value="Person 1"></ListItem>
+            <ListItem Value="Person 2"></ListItem>
+            @if (showItem) {
+                <ListItem Value="Person 3"></ListItem>
+            }
+            <ListItem Value="Person 4"></ListItem>
+            <ListItem Value="Person 5"></ListItem>
+        </List>
+    </div>
+</div>
+
+@code {
+    private bool showItem;
+}

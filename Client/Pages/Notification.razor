@@ -1,0 +1,130 @@
+﻿@page "/notification"
+@using Microsoft.AspNetCore.SignalR.Client
+@using Blazor.Shared
+@implements IAsyncDisposable
+@inject NavigationManager Navigation
+
+<Title value="Notification" />
+
+<h2>Notification</h2>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <div class="notification-bell" @onclick="NotificationHideShow"></div>
+        <div class="notification-counter">@currentNotifications.Count()</div>
+
+        <div class="notification-window" style="display: @display !important" @onclick="NotificationHideShow">
+            <h3>Notifications (<span class="text-info">@currentNotifications.Count()</span>)</h3>
+            <div class="notification-items">
+                @foreach (var notificationMessage in currentNotifications) {
+                    <div class="notification" notiId="@notificationMessage.Id">
+                        <h4 class="name">Sender: @notificationMessage.SenderName</h4>
+                        <h5 class="title">@notificationMessage.MsgTitle</h5>
+                        <div class="body">@notificationMessage.MsgBody</div>
+                        <div class="date">@notificationMessage.MsgDateSt</div>
+                    </div>
+                }
+            </div>
+            <div class="see-all"><a href="#">See All</a></div>
+        </div>
+    </div>
+</div>
+
+<br />
+<br />
+
+<EditForm Model="@notificationMessage" OnValidSubmit="Send">
+    <DataAnnotationsValidator />
+    <div class="form-group row">
+        <label for="SenderName" class="control-label col-md-12">Sender Name</label>
+        <div class="col-md-6">
+            <InputText form="SenderName" type="text" class="form-control" @bind-Value="notificationMessage.SenderName" placeholder="Sender" />
+        </div>
+        <ValidationMessage For="@(() => notificationMessage.SenderName)" />
+    </div>
+    <div class="form-group row">
+        <label for="ReceiverName" class="control-label col-md-12">Receiver Name</label>
+        <div class="col-md-6">
+            <InputText form="ReceiverName" type="text" class="form-control" @bind-Value="notificationMessage.ReceiverName" placeholder="Receiver" />
+        </div>
+        <ValidationMessage For="@(() => notificationMessage.ReceiverName)" />
+    </div>
+    <div class="form-group row">
+        <label for="MsgTitle" class="control-label col-md-12">Message Title</label>
+        <div class="col-md-6">
+            <InputText form="MsgTitle" type="text" class="form-control" @bind-Value="notificationMessage.MsgTitle" placeholder="Title" />
+        </div>
+        <ValidationMessage For="@(() => notificationMessage.MsgTitle)" />
+    </div>
+    <div class="form-group row">
+        <label for="MsgBody" class="control-label col-md-12">Message Body</label>
+        <div class="col-md-6">
+            <InputText form="MsgBody" type="text" class="form-control" @bind-Value="notificationMessage.MsgBody" placeholder="Body" />
+        </div>
+        <ValidationMessage For="@(() => notificationMessage.MsgBody)" />
+    </div>
+
+    <div class="form-group row">
+        <div class="col-md-6 text-right">
+            <button type="submit" class="btn btn-sm btn-primary" disabled="@(!IsConnected)">Send</button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private NotificationMessage notificationMessage = new();
+    private IList<NotificationMessage>       allNotifications     = new List<NotificationMessage>();
+    private IEnumerable<NotificationMessage> currentNotifications = new List<NotificationMessage>();
+
+    private HubConnection hubConnection;
+    private string display = "none";
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/ChatHub"))
+            .Build();
+
+        hubConnection.On<string, string, string, string>("ReceiveMessage",
+            (senderName, receiverName, msgTitle, msgBody) => {
+                allNotifications.Add(new NotificationMessage()
+                {
+                    Id = allNotifications.Count() + 1,
+                    SenderName   = senderName,
+                    ReceiverName = receiverName,
+                    MsgTitle     = msgTitle,
+                    MsgBody      = msgBody
+                });
+                currentNotifications = from x in allNotifications orderby x.Id where x.SenderName != notificationMessage.SenderName select x;
+
+                InvokeAsync(StateHasChanged);
+            });
+
+        await hubConnection.StartAsync();
+    }
+
+    public async Task Send()
+    {
+        if (IsConnected) await SendMessage();
+
+        notificationMessage.MsgTitle = string.Empty;
+        notificationMessage.MsgBody  = string.Empty;
+    }
+
+    private bool IsConnected =>
+        hubConnection.State == HubConnectionState.Connected;
+
+    private Task SendMessage() => hubConnection.SendAsync("SendMessage",
+        notificationMessage.SenderName,
+        notificationMessage.ReceiverName,
+        notificationMessage.MsgTitle,
+        notificationMessage.MsgBody);
+
+    private void NotificationHideShow() =>
+        display = display == "none" ? "block" : "none";
+
+    public async ValueTask DisposeAsync()
+    {
+        await hubConnection.DisposeAsync();
+    }
+}

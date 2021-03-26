@@ -1,0 +1,21 @@
+﻿@page "/card"
+
+<Title value="Card" />
+
+<h2>Popup Card</h2>
+<hr />
+<button class="btn btn-primary m-2" @onclick="@((MouseEventArgs args) => DisplayCard(args))">Open</button>
+
+<PopupCard @ref="card" Title="Title" Width="400px" Height="auto" FadeMs="500">
+    text text text text text text text text text
+    text text text text text text text text text
+    text text text text text text text text text
+    text text text text text text text text text
+    text text text text text text text text
+</PopupCard>
+
+@code {
+    PopupCard card;
+
+    public void DisplayCard(MouseEventArgs args) => card.Show(args);
+}

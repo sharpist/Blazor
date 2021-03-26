@@ -1,0 +1,147 @@
+﻿@page "/employeelist"
+@using Microsoft.AspNetCore.SignalR.Client
+@using System.Text.Json
+@using Blazor.Shared
+@implements IDisposable
+@inject HttpClient        Http
+@inject NavigationManager Navigation
+
+<Title value="Employee List" />
+
+<h2>Employee Details</h2>
+<hr />
+<div class="row mb-4">
+    <div class="col-md-4 mt-2">
+        <a href="/addemployee" class="btn btn-sm btn-primary" role="button">
+            <span class="oi oi-plus" aria-hidden="true"></span> Add Employee
+        </a>
+    </div>
+    <div class="input-group col-md-4 offset-md-4 mt-2">
+        <input type="text" class="form-control form-control-sm" placeholder="Filter by name"
+            @bind="@nameFilter" @bind:event="oninput" @onkeyup="Filter" />
+        <div class="input-group-append">
+            <button type="button" class="btn btn-sm btn-outline-danger px-1" @onclick="Clear">
+                <span class="oi oi-delete" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="btn btn-sm btn-info px-3" @onclick="Filter">
+                <span class="oi oi-magnifying-glass" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<Pagination TotalPagesQuantity="totalPagesQuantity" CurrentPage="currentPage" Radius="2"
+    SelectedPage="SelectedPage"></Pagination>
+
+@if (employees is null) {
+    <p>Loading...</p>
+}
+else {
+    <table class="table table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Gender</th>
+                <th scope="col">City</th>
+                <th scope="col" colspan="2">Country</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var employee in employees) {
+                <tr>
+                    <th scope="row" class="align-middle">@employee.Id</th>
+                    <td class="align-middle">@employee.Name</td>
+                    <td class="align-middle">@employee.Gender</td>
+                    <td class="align-middle">@employee.City</td>
+                    <td class="align-middle">@employee.Country</td>
+                    <td class="table-active text-center">
+                        <a href="/editemployee/@employee.Id" class="btn btn-sm btn-info m-1" role="button">
+                            <span class="oi oi-pencil" aria-hidden="true"></span> Edit
+                        </a>
+                        <a href="/deleteemployee/@employee.Id" class="btn btn-sm btn-outline-danger m-1" role="button">
+                            <span class="oi oi-trash" aria-hidden="true"></span> Delete
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private int currentPage = 1;
+    private int totalPagesQuantity;
+
+    private IEnumerable<EmployeeInfo> employees;
+    private HubConnection             hubConnection;
+    private string                    nameFilter;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/EmployeeHub"))
+            .Build();
+
+        hubConnection.On("ReceiveMessage", () => {
+            CallLoadData();
+            StateHasChanged();
+        });
+
+        await hubConnection.StartAsync();
+        await LoadData();
+    }
+
+    private void CallLoadData()
+    {
+        Task.Run(async () => {
+            await LoadData();
+        });
+    }
+
+    private async Task SelectedPage(int page)
+    {
+        currentPage = page;
+        await LoadData();
+    }
+
+    protected async Task LoadData(int quantityPerPage = 8)
+    {
+        var httpResponse = await Http.GetAsync($"api/employee?page={currentPage}&quantityPerPage={quantityPerPage}&name={nameFilter}");
+        if (httpResponse.IsSuccessStatusCode) {
+            totalPagesQuantity = int.Parse(httpResponse.Headers.GetValues("pagesQuantity").FirstOrDefault());
+            var stringResponse = await httpResponse.Content.ReadAsStringAsync();
+            employees = JsonSerializer.Deserialize<IEnumerable<EmployeeInfo>>(stringResponse,
+                new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+        }
+        else {
+            // handle error
+        }
+        StateHasChanged();
+    }
+
+    private async Task Filter(EventArgs e)
+    {
+        if (e is MouseEventArgs)
+            if (String.IsNullOrEmpty(nameFilter)) return;
+
+        currentPage = 1;
+        await LoadData();
+    }
+
+    private async Task Clear(EventArgs e)
+    {
+        if (e is MouseEventArgs)
+            if (String.IsNullOrEmpty(nameFilter)) return;
+
+        nameFilter  = String.Empty;
+        currentPage = 1;
+        await LoadData();
+    }
+
+    public void Dispose()
+    {
+        _ = hubConnection.DisposeAsync();
+    }
+}

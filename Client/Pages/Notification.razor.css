@@ -1,0 +1,154 @@
+﻿@font-face {
+    font-family: 'Icons';
+    src: url('../../lib/open-iconic/font/fonts/open-iconic.eot');
+    src: url('../../lib/open-iconic/font/fonts/open-iconic.eot?#iconic-sm') format('embedded-opentype'),
+        url('../../lib/open-iconic/font/fonts/open-iconic.woff') format('woff'),
+        url('../../lib/open-iconic/font/fonts/open-iconic.ttf') format('truetype'),
+        url('../../lib/open-iconic/font/fonts/open-iconic.otf') format('opentype'),
+        url('../../lib/open-iconic/font/fonts/open-iconic.svg#iconic-sm') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.notification-bell {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    transform-origin: center;
+    -moz-transform-origin: center;
+    -webkit-transform-origin: center;
+    transform: translateX(-50%) rotate(15deg);
+    -moz-transform: translateX(-50%) rotate(15deg);
+    -webkit-transform: translateX(-50%) rotate(15deg);
+    cursor: pointer;
+}
+
+    .notification-bell:before {
+        content: '\e01d';
+        color: #007bff;
+        font-size: 28px;
+        font-family: 'Icons' !important;
+        text-shadow: 1px 2px 3px #ccc;
+    }
+
+.notification-counter {
+    display: block;
+    position: absolute;
+    top: 5px;
+    right: 15px;
+    background: #e1141e;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 400;
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    padding: 1px 3px;
+    z-index: 1;
+}
+
+.notification-window {
+    display: none;
+    width: 300px;
+    position: absolute;
+    top: 32px;
+    right: 2px;
+    background: #fff;
+    outline-offset: 0;
+    outline: 1px solid #ddd;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+}
+
+    .notification-window:before {
+        content: '';
+        display: block;
+        width: 0;
+        height: 0;
+        position: absolute;
+        top: -20px;
+        right: 10px;
+        color: transparent;
+        border: 10px solid #ccc;
+        border-color: transparent transparent #fff;
+    }
+
+    .notification-window h3 {
+        display: block;
+        background: #fff;
+        color: #333;
+        font-size: 12px;
+        font-weight: 700;
+        border-bottom: 1px solid rgba(100, 100, 100, 0.3);
+        padding: 8px;
+        margin: 0;
+    }
+
+    .notification-window .see-all {
+        background: #f6f7f8;
+        font-size: 12px;
+        font-weight: 700;
+        text-align: center;
+        border-top: 1px solid rgba(100, 100, 100, 0.3);
+        padding: 8px;
+    }
+
+        .notification-window .see-all a {
+            color: #3b5998;
+            pointer-events: none;
+        }
+
+            .notification-window .see-all a:hover {
+                background: #f6f7f8;
+                color: #3b5998;
+                text-decoration: underline;
+            }
+
+.notification-items {
+    height: 300px;
+    overflow-y: scroll;
+    background-color: #f0f8ff;
+}
+
+.notification {
+    color: #000;
+    border-top: 1px solid #ccc;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+    .notification > .name {
+        margin-left: 4px;
+    }
+
+    .notification > .title {
+        font-weight: 700;
+        margin-left: 10px;
+    }
+
+    .notification > .body {
+        margin: 0 10px 0 10px;
+    }
+
+    .notification > .date {
+        text-align: right;
+        margin-right: 10px;
+    }
+
+::-webkit-scrollbar {
+    width: 2px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }

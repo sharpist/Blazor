@@ -1,0 +1,19 @@
+﻿.item-responsive {
+    position: relative;
+    padding-top: 75%; /* 800×600 (3:4)*100% */
+}
+
+    .item-responsive:before {
+        content: "";
+        width: 100%;
+        display: block;
+    }
+
+    .item-responsive > .content {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-size: cover !important;
+    }

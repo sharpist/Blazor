@@ -1,0 +1,94 @@
+﻿@page "/dashboard"
+@using Microsoft.AspNetCore.SignalR.Client
+@using Syncfusion.Blazor.Layouts
+@implements IDisposable
+@inject NavigationManager Navigation
+
+<Title value="Dashboard" />
+
+<h2>Real-Time Updates using SignalR</h2>
+<hr />
+<div class="form-group row">
+    <div class="col-md-12">
+        <SfDashboardLayout @ref="dashboard" ID="dashboard" CellSpacing="@(new double[] { 10, 10, })" Columns="6">
+            <DashboardLayoutEvents OnDragStop="DragStop">
+
+            </DashboardLayoutEvents>
+
+            <DashboardLayoutPanels>
+                <DashboardLayoutPanel SizeX="2" Row="0" Col="0" CssClass="orange">
+                    <ContentTemplate>
+                        <div class="card">
+                            <div class="card-content text">
+                                First Box
+                            </div>
+                        </div>
+                    </ContentTemplate>
+                </DashboardLayoutPanel>
+
+                <DashboardLayoutPanel SizeX="2" Row="0" Col="2" CssClass="blue">
+                    <ContentTemplate>
+                        <div class="card">
+                            <div class="card-content text">
+                                Second Box
+                            </div>
+                        </div>
+                    </ContentTemplate>
+                </DashboardLayoutPanel>
+
+                <DashboardLayoutPanel SizeX="2" Row="0" Col="4" CssClass="green">
+                    <ContentTemplate>
+                        <div class="card">
+                            <div class="card-content text">
+                                Third Box
+                            </div>
+                        </div>
+                    </ContentTemplate>
+                </DashboardLayoutPanel>
+            </DashboardLayoutPanels>
+        </SfDashboardLayout>
+    </div>
+</div>
+
+@code {
+    private SfDashboardLayout dashboard;
+    private HubConnection     hubConnection;
+    private int row;
+    private int col;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/DashboardHub"))
+            .Build();
+
+        hubConnection.On<string, int, int>("LayoutChange", OnLayoutChange);
+
+        await hubConnection.StartAsync();
+    }
+
+    private Task OnLayoutChange(string id, int row, int column)
+    {
+        this.dashboard.MovePanelAsync(id, row, column);
+        return Task.CompletedTask;
+    }
+
+    public async Task DragStop(DragStopArgs args)
+    {
+        var id = args.Id;
+        var value = await this.dashboard.Serialize();
+        for (int i = 0; i < value.Count; i++)
+        {
+            if (value[i].Id == args.Id) {
+                row = value[i].Row;
+                col = value[i].Column;
+            }
+        }
+        await hubConnection.InvokeAsync("DashboardDragAndDrop", id, row, col);
+    }
+
+    public void Dispose()
+    {
+        _ = hubConnection.DisposeAsync();
+    }
+}

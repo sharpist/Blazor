@@ -1,0 +1,29 @@
+﻿<CascadingValue Value="this">
+    @ChildContent
+</CascadingValue>
+
+<ul class="list-unstyled">
+    @foreach (var item in Items) {
+        <li>@item</li>
+    }
+</ul>
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; }
+
+    public List<string> Items { get; set; } = new List<string>();
+
+    public void AddItem(string value)
+    {
+        Items.Add(value);
+        StateHasChanged();
+    }
+
+    public void RemoveItem(string value)
+    {
+        if (Items.Contains(value)) {
+            Items.Remove(value);
+            StateHasChanged();
+        }
+    }
+}

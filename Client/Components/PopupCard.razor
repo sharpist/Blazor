@@ -1,0 +1,79 @@
+﻿<style type="text/css">
+    .modalBackground {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-color: transparent;
+        z-index: 999;
+    }
+
+    .btnPopupCard {
+        position: absolute;
+        transition: opacity 0.25s ease-in-out;
+        -moz-transition: opacity 0.25s ease-in-out;
+        -webkit-transition: opacity 0.25s ease-in-out;
+        z-index: 1000;
+    }
+</style>
+
+@if (visible) {
+    <div class="modalBackground" @onclick="Close">
+        <div class="btnPopupCard" @onclick:stopPropagation="true"
+             style="@($"opacity:{opacity};top:{verticalOffSet}px;left:{horizontalOffSet}px;")">
+            <div class="card bg-white rounded shadow" style="@($"width:{Width};height:{Height};")">
+
+                <div class="card-header text-muted">Header</div>
+                <img class="card-img-top" src="/img/popup-card/card.jpg" alt="card logo" />
+
+                <div class="card-body text-body">
+
+                    <h4 class="card-title">@Title</h4>
+                    <p class="card-text text-justify">@ChildContent</p>
+
+                    <div class="row text-center">
+                        <div class="col-md-6 p-2"></div>
+                        <div class="col-md-6 p-2">
+                            <button class="btn btn-danger" @onclick="Close">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public EventCallback<MouseEventArgs> OnCloseCallback { get; set; }
+    [Parameter] public RenderFragment                ChildContent    { get; set; }
+
+    [Parameter] public string Title  { get; set; } = "Title";
+    [Parameter] public string Width  { get; set; } = "400px";
+    [Parameter] public string Height { get; set; } = "auto";
+    [Parameter] public int    FadeMs { get; set; } = 0;
+
+    private bool   visible;
+    private double opacity;
+    private int    verticalOffSet;
+    private int    horizontalOffSet;
+
+    protected override void OnInitialized() => base.OnInitialized();
+
+    public async Task Close(MouseEventArgs args = null)
+    {
+        await OnCloseCallback.InvokeAsync(args);
+        visible = false;
+        opacity = 0.0d;
+    }
+
+    public void Show(MouseEventArgs args = null)
+    {
+        if (args != null) {
+            verticalOffSet   = (int)(args.ClientY);
+            horizontalOffSet = (int)(args.ClientX);
+        }
+        visible = true;
+        opacity = 1.0d;
+    }
+}

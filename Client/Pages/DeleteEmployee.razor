@@ -1,0 +1,89 @@
+﻿@page "/deleteemployee/{id}"
+@using Microsoft.AspNetCore.SignalR.Client
+@using Blazor.Shared
+@implements IDisposable
+@inject HttpClient        Http
+@inject NavigationManager Navigation
+
+<h2>Delete Employee</h2>
+<hr />
+<h4>Are you sure want to delete this Employee?</h4>
+<br />
+<div class="form-group row">
+    <div class="col-md-6">
+        <table class="table">
+            <thead class="thead-dark"></thead>
+
+            <tbody>
+                <tr>
+                    <th scope="row">ID</th>
+                    <td>@employee.Id</td>
+                </tr>
+                <tr>
+                    <th scope="row">Name</th>
+                    <td>@employee.Name</td>
+                </tr>
+                <tr>
+                    <th scope="row">Gender</th>
+                    <td>@employee.Gender</td>
+                </tr>
+                <tr>
+                    <th scope="row">City</th>
+                    <td>@employee.City</td>
+                </tr>
+                <tr>
+                    <th scope="row">Country</th>
+                    <td>@employee.Country</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="form-group row">
+    <div class="col-md-6 text-right">
+        <button type="button" class="btn btn-danger m-1" @onclick="Delete">Delete</button>
+        <button type="button" class="btn btn-secondary m-1" @onclick="Cancel">Cancel</button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Id { get; set; }
+
+    private EmployeeInfo  employee = new EmployeeInfo();
+    private HubConnection hubConnection;
+
+    protected override async Task OnInitializedAsync()
+    {
+        employee = await Http.GetFromJsonAsync<EmployeeInfo>("api/employee/" + Id);
+
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri("/EmployeeHub"))
+            .Build();
+
+        await hubConnection.StartAsync();
+    }
+
+    public async Task Delete()
+    {
+        await Http.DeleteAsync("api/employee/" + Id);
+        if (IsConnected) await SendMessage();
+
+        Navigation.NavigateTo("employeelist");
+    }
+
+    private bool IsConnected =>
+        hubConnection.State == HubConnectionState.Connected;
+
+    private Task SendMessage() => hubConnection.SendAsync("SendMessage");
+
+    public void Cancel()
+    {
+        Navigation.NavigateTo("employeelist");
+    }
+
+    public void Dispose()
+    {
+        _ = hubConnection.DisposeAsync();
+    }
+}
